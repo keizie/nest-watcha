@@ -49,14 +49,30 @@ async function bootstrap() {
   }
 
   const urls = [];
-  const url = process.env.WATCHA_START_URL.replace(/10$/, '');
+  const url = process.env.WATCHA_START_URL.replace(/10$/, 'N');
   urls.push(url);
   urls.push(url.replace('/movies/', '/books/'));
   urls.push(url.replace('/movies/', '/tv_seasons/'));
   urls.push(url.replace('/movies/', '/webtoons/'));
+  // urls.splice(0, urls.length);
+  urls.push(url.replace('/movies/ratings/N', '/movies/wishes'));
+  urls.push(url.replace('/movies/ratings/N', '/books/wishes'));
+  urls.push(url.replace('/movies/ratings/N', '/tv_seasons/wishes'));
+  urls.push(url.replace('/movies/ratings/N', '/webtoons/wishes'));
+  urls.push(url.replace('/movies/ratings/N', '/movies/doings'));
+  urls.push(url.replace('/movies/ratings/N', '/books/doings'));
+  urls.push(url.replace('/movies/ratings/N', '/tv_seasons/doings'));
+  urls.push(url.replace('/movies/ratings/N', '/webtoons/doings'));
+  // console.log(urls);
+  // throw new Error('stop');
+
   for (const u of urls) {
-    for (let i = 10; i >= 1; i--) {
-      await load(page, u.concat(i.toString()));
+    if (u.match(/N$/)) {
+      for (let i = 10; i >= 1; i--) {
+        await load(page, u.replace(/N$/, i.toString()));
+      }
+    } else {
+      await load(page, u);
     }
   }
 
@@ -125,6 +141,13 @@ async function load(page: Page, url) {
   // app.close();
   // return;
 
+  const empty = await page.$('section[class*="EmptySection"]');
+  if (empty) {
+    console.log(`${url} empty`);
+    return;
+  }
+  console.log(`${url} not empty`);
+
   // 3. 스크롤 끝까지 내려간 다음에 화면 전체를 저장
 
   // 4. 스크롤 내리기 3회 해보고, 응답값 저장 해본 다음, 실제 접속과 일치하는지 비교 - ok
@@ -161,10 +184,15 @@ async function load(page: Page, url) {
   }
   // throw new Error('stop');
 
-  await page.screenshot({
-    path: '2.png',
-    fullPage: true,
-  });
+  try {
+    await page.screenshot({
+      path: '2.png',
+      fullPage: true,
+    });
+  } catch (e) {
+    // cannot create screenshot if too much items loaded
+    console.log(e.message);
+  }
 
   const epoch = Date.now();
   for (const link of pairs) {
