@@ -1,5 +1,6 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
+// @ts-ignore
 import { render, Text } from 'ink';
 import * as Gradient from 'ink-gradient';
 import * as BigText from 'ink-big-text';

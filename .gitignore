@@ -36,3 +36,6 @@ lerna-debug.log*
 
 .env
 cookies.json
+cookies.*.json
+*.png
+*.html

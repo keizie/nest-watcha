@@ -1,5 +1,6 @@
 import * as Gradient from 'ink-gradient';
 import * as BigText from 'ink-big-text';
+// @ts-ignore
 import { render } from 'ink';
 
 const App = () => (
